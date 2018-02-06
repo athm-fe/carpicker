@@ -19,7 +19,7 @@
   </div>
   <div class="athm-select__option" data-select-dropdown>
     <div class="pop-wrapper">
-	  <!-- 区别主要在这里，剩下的工作就交给了样式实现 -->
+      <!-- 区别主要在这里，剩下的工作就交给了样式实现 -->
       <div class="brand" data-select-brand></div>
       <div class="series" data-select-series></div>
       <div class="spec" data-select-spec></div>
@@ -43,8 +43,8 @@
   </div>
 </div>
 
-<!-- 品牌、车系、车型各自使用下拉框 -->
-<div class="athm-select" id="js-select-brand" data-toggle="carpicker">
+<!-- 单选品牌下拉框 -->
+<div class="athm-select" id="js-select-brand2" data-toggle="carpicker">
   <div class="athm-select__selected" data-select-picker>
     <span class="athm-select__text" data-select-value>选择品牌</span>
     <span class="athm-select__icon">
@@ -70,27 +70,94 @@ $('#select').carpicker(options);
 ```
 ```javascript
 var dataCar = {
-  getBrandData: function () {},
-  getSeriesData: function () {},
-  getSpecData: function () {}
+  getBrandData: function() {
+    var carBrand = [];
+    brandSereisData.forEach(element => {
+      var item = {
+        'id': element.I,
+        'name': element.N,
+        'letter': element.L,
+        'list': element.List
+      }
+      carBrand.push(item)
+    });
+    return carBrand;
+  },
+  getSeriesData: function(key, callback) {
+    var carSeries = [];
+    brandSereisData.forEach(element => {
+      if (element.I == key) {
+        element.List.forEach(ele => {
+          var item = {
+            'id': '',
+            'name': '',
+            'list': [],
+            'brandId': key
+          };
+          item.id = ele.I;
+          item.name = ele.N; 
+          ele.List.forEach(series => {
+            item.list.push({
+              'id': series.I,
+              'name': series.N
+            })
+          })
+          carSeries.push(item);
+        })
+        return;
+      }
+    });
+    if (callback && typeof callback === 'function') {
+      callback(carSeries)
+    };
+    return;
+  },
+  getSpecData: function(key, callback) {
+    var carSpec = [];
+    if (specData && specData.List.length > 0) {
+      specData.List.forEach(ele => {
+        var item = {
+          'id': '',
+          'name': '',
+          'list': []
+        };
+        item.id = ele.I;
+        item.name = ele.N; 
+        ele.List.forEach(spec => {
+          item.list.push({
+            'id': spec.I,
+            'name': spec.N,
+            'price': spec.P
+          })
+        })
+        carSpec.push(item)
+      })
+      if (callback && typeof callback === 'function') {
+        callback(carSpec);
+      };
+      return;
+    }
+  }
 }
-$('#js-select-simple').carpicker({
+$('#js-select-brand).carpicker({
   selectLevel: 'series',
   onInitPicker: dataCar.getBrandData,
   onBrandPicker: function (id) {
     dataCar.getSeriesData(id, function (data) {
       // 全部车系项
-	  var seriesItem = {
-	    'show': true,
-	    'link': true,
-	    'url': '//www.autohome.com.cn/'
-	   }
-	   obj.data('fe.carpicker').setSeries(data, seriesItem);
-	})
-  },	
+      var seriesItem = {
+        'show': true,
+        'link': true,
+        'url': '//www.autohome.com.cn/'
+      }
+      $('#js-select-brand').data('fe.carpicker').setSeries(data, seriesItem);
+    })
+  },
   onSeriesPicker: function (id) {
-    // code
-  };
+    dataCar.getSpecData(id, function (data) {
+      $('#js-select-spec').data('fe.carpicker').setSpec(data);
+    });
+  }
 ```
 
 ## Options

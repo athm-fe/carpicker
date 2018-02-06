@@ -113,15 +113,19 @@
     src="https://code.jquery.com/jquery-3.3.1.min.js"
     integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
     crossorigin="anonymous"></script>
-  <script 
-    src="http://car.autohome.com.cn/javascript/NewSpecCompare.js?20131010"
-    charset="gb2312"></script>
+  <script>
+    var brandSereisData = [
+    {"I":33,"N":"奥迪","L":"A","List":[{"I":9,"N":"一汽-大众奥迪","List":[{"I":3170,"N":"奥迪A3"},{"I":692,"N":"奥迪A4L"},{"I":18,"N":"奥迪A6L"},{"I":19,"N":"奥迪A4(停售)"},{"I":509,"N":"奥迪A6(停售)"}]},{"I":346,"N":"Audi Sport","List":[{"I":511,"N":"奥迪R8"},{"I":2731,"N":"奥迪RS 3"},{"I":2735,"N":"奥迪RS 5"},]},{"I":79,"N":"奥迪(进口)","List":[{"I":650,"N":"奥迪A1"},{"I":370,"N":"奥迪A3(进口)"},{"I":4325,"N":"奥迪A3新能源(进口)"},{"I":471,"N":"奥迪A4(进口)"},{"I":538,"N":"奥迪A5"},{"I":472,"N":"奥迪A6(进口)"},{"I":740,"N":"奥迪A7"},]}]},
+    {"I":15,"N":"宝马","L":"B","List":[{"I":29,"N":"华晨宝马","List":[{"I":4171,"N":"宝马1系"},{"I":3941,"N":"宝马2系旅行车"},{"I":66,"N":"宝马3系"}]},{"I":80,"N":"宝马(进口)","List":[{"I":373,"N":"宝马1系(进口)"},{"I":3230,"N":"宝马2系"},{"I":3726,"N":"宝马2系多功能旅行车"},{"I":3302,"N":"宝马2系旅行车(进口)"},{"I":317,"N":"宝马3系(进口)"},{"I":2963,"N":"宝马3系GT"},{"I":2968,"N":"宝马4系"},{"I":202,"N":"宝马5系(进口)"}]},{"I":345,"N":"宝马M","List":[{"I":3357,"N":"宝马M2"},{"I":2196,"N":"宝马M3"},{"I":3189,"N":"宝马M4"}]}]}
+    ]
+    var specData = {I:3170,List:[{I:1,N:"在售车型",List:[{I:32040,N:"2018款 30周年年型 Sportback 35 TFSI 进取型",P:192300},{I:32041,N:"2018款 30周年年型 Sportback 35 TFSI 时尚型",P:215600},{I:32042,N:"2018款 30周年年型 Sportback 35 TFSI 风尚型",P:235500},{I:32043,N:"2018款 30周年年型 Sportback 35 TFSI 运动型",P:235500},{I:32044,N:"2018款 30周年年型 Sportback 40 TFSI 风尚型",P:252500},{I:32045,N:"2018款 30周年年型 Sportback 40 TFSI 运动型",P:252500},{I:32046,N:"2018款 30周年年型 Limousine 35 TFSI 进取型",P:198300},{I:32047,N:"2018款 30周年年型 Limousine 35 TFSI 时尚型",P:221600},{I:32048,N:"2018款 30周年年型 Limousine 35 TFSI 风尚型",P:241500}]},{I:2,N:"停售车型",List:[{I:25898,N:"2016款 Sportback 35 TFSI 进取型",P:184900},{I:25899,N:"2016款 Sportback 35 TFSI 领英型",P:209200},{I:25900,N:"2016款 Sportback 35 TFSI 风尚型",P:225900},{I:27076,N:"2016款 Sportback 35 TFSI 特别版",P:238800},{I:25901,N:"2016款 Sportback 40 TFSI 风尚型",P:249900},{I:25902,N:"2016款 Sportback 40 TFSI 豪华型",P:277000},{I:25903,N:"2016款 Limousine 35 TFSI 进取型",P:190900},{I:25904,N:"2016款 Limousine 35 TFSI 领英型",P:215200},{I:25905,N:"2016款 Limousine 35 TFSI 风尚型",P:231900}]}]}
+  </script>
   <script src="dist/carpicker.js"></script>
   <script>
     var dataCar = {
       getBrandData: function() {
         var carBrand = [];
-        listCompare$100.forEach(element => {
+        brandSereisData.forEach(element => {
           var item = {
             'id': element.I,
             'name': element.N,
@@ -134,9 +138,9 @@
       },
       getSeriesData: function(key, callback) {
         var carSeries = [];
-        listCompare$100.forEach(element => {
+        brandSereisData.forEach(element => {
           if (element.I == key) {
-            element.List.forEach(function (ele, i) {
+            element.List.forEach(ele => {
               var item = {
                 'id': '',
                 'name': '',
@@ -145,7 +149,7 @@
               };
               item.id = ele.I;
               item.name = ele.N; 
-              ele.List.forEach(function (series, j) {
+              ele.List.forEach(series => {
                 item.list.push({
                   'id': series.I,
                   'name': series.N
@@ -162,39 +166,30 @@
         return;
       },
       getSpecData: function(key, callback) {
-        $.ajax({
-          'url': 'http://car.autohome.com.cn/duibi/ashx/specComparehandler.ashx',
-          'data': {'type': 1, 'seriesid': key, 'format': 'json'},
-          'dataType': 'jsonp',
-          'jsonp': 'callback'
-        }).done(function(data) {
-          var carSpec = [];
-          if (data && data.List.length > 0) {
-            data.List.forEach(function(ele, i) {
-              var item = {
-                'id': '',
-                'name': '',
-                'list': []
-              };
-              item.id = ele.I;
-              item.name = ele.N; 
-              ele.List.forEach(function(spec, j) {
-                item.list.push({
-                  'id': spec.I,
-                  'name': spec.N,
-                  'price': spec.P
-                })
-              })
-              carSpec.push(item)
-            })
-            if (callback && typeof callback === 'function') {
-              callback(carSpec);
+        var carSpec = [];
+        if (specData && specData.List.length > 0) {
+          specData.List.forEach(ele => {
+            var item = {
+              'id': '',
+              'name': '',
+              'list': []
             };
-            return;
-          }
-        }).fail(function() {
-          console.log('error');
-        });
+            item.id = ele.I;
+            item.name = ele.N; 
+            ele.List.forEach(spec => {
+              item.list.push({
+                'id': spec.I,
+                'name': spec.N,
+                'price': spec.P
+              })
+            })
+            carSpec.push(item)
+          })
+          if (callback && typeof callback === 'function') {
+            callback(carSpec);
+          };
+          return;
+        }
       }
     }
 

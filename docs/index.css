@@ -155,7 +155,6 @@ body{
   padding: 5px 0;
   box-sizing: border-box;
   flex-direction: column;
-  justify-content: space-between;
 }
 .athm-select .pop-wrapper .brand > .index li {
   cursor: pointer;
