@@ -1,10 +1,5 @@
 # Carpicker
 
-## TODO
-
-* 键盘功能支持 Up、Down、Enter、ESC
-* 多选支持
-
 ## HTML
 
 选择品牌、车系、车型下拉框有三种形式
@@ -91,12 +86,11 @@ $('#js-select-simple').carpicker({
 	    'url': '//www.autohome.com.cn/'
 	   }
 	   obj.data('fe.carpicker').setSeries(data, seriesItem);
-	 })
-	},
-	
-	onSeriesPicker: function (id) {
-	  // code
-	};
+	})
+  },	
+  onSeriesPicker: function (id) {
+    // code
+  };
 ```
 
 ## Options
@@ -111,9 +105,9 @@ selectDropdown | string | `'[data-select-dropdown]'` | 下拉容器
 selectedClass | string | `'selected'` | 选中选项使用的样式类.
 disabledClass | string | `'disabled'` | 下拉框禁用状态样式类.
 activeClass | string | `'active'` | 下拉框激活状态样式类.
-selectLevel | string | `'brand'` | 选择终止层
-selectNav | Boolean | `true` | 是否显示导航
-onInitPicker | function | `null` | 初始化完成
+selectLevel | string | `'brand'` | 选择到指定级 <br> `'brand'` `'series'` `'spec'`
+selectNav | Boolean | `false` | 是否显示导航 <br> 为 true 会自动创建
+onInitPicker | function | `null` | 初始化完成,用于渲染品牌数据
 onBrandPicker | function | `null` | 选择品牌项执行
 onSeriesPicker | function | `null` | 选择车系项执行
 onSpecPicker | function | `null` | 选择车型项执行
