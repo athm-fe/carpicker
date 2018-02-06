@@ -139,7 +139,7 @@ var dataCar = {
     }
   }
 }
-$('#js-select-brand).carpicker({
+$('#js-select-brand').carpicker({
   selectLevel: 'series',
   onInitPicker: dataCar.getBrandData,
   onBrandPicker: function (id) {
