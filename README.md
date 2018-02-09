@@ -237,13 +237,29 @@ $('#select').carpicker('enable');
 
 获取值
 
-### `.data('fe.carpicker').setSeries(data)`
+### `.data('fe.carpicker').setSeries(data, obj)`
 
 渲染车系数据并显示
+`obj` 为控制「全部车系」链接的选项
 
-### `.data('fe.carpicker').setSpec(data)`
+```js
+// 全部车系项
+var obj = {
+  'show': true,
+  'link': true,
+  'url': '//car.autohome.com.cn/price/brand.html'
+}
+```
+
+
+### `.data('fe.carpicker').setSpec(data, array)`
 
 渲染车型数据并显示
+`array` 以数组形式传递车型 id 在渲染时如果当前车型 id 参数于 array 中会将当前项做禁用处理 
+
+### `.data('fe.carpicker').destroy()`
+
+销毁当前对象
 
 
 ## Event

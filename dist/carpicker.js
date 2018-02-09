@@ -131,15 +131,15 @@ Carpicker.prototype._init = function () {
 
     // 点击品牌并触发对应回调函数
     if ($target === 'brand' && typeof that.options.onBrandPicker === 'function') {
-      that.options.onBrandPicker($item.attr(Attr.DATA_VALUE));
+      that.options.onBrandPicker($item.attr(Attr.DATA_VALUE), this);
     }
     // 点击车系并触发对应回调函数
     if ($target === 'series' && typeof that.options.onSeriesPicker === 'function') {
-      that.options.onSeriesPicker($item.attr(Attr.DATA_VALUE));
+      that.options.onSeriesPicker($item.attr(Attr.DATA_VALUE), this);
     }
     // 点击车型并触发对应回调函数
-    if ($target === 'spec' && typeof that.options.onSpecPicker === 'function') {
-      that.options.onSpecPicker($item.attr(Attr.DATA_VALUE));
+    if ($target === 'spec' && typeof that.options.onSpecPicker === 'function' && !$item.hasClass('disabled')) {
+      that.options.onSpecPicker($item.attr(Attr.DATA_VALUE), this);
     }
 
     // 设置最多选择到品牌参数时，点击品牌选中并收起下拉框
@@ -159,7 +159,7 @@ Carpicker.prototype._init = function () {
       that.hide();
     }
     // 车型
-    if ($target === 'spec') {
+    if ($target === 'spec' && !$item.hasClass('disabled')) {
       that.setValue({
         text: $item.attr(Attr.DATA_TEXT),
         value: $item.attr(Attr.DATA_VALUE)
@@ -289,7 +289,7 @@ Carpicker.prototype.setBrand = function () {
       brandList += '<dt id=\'jump-' + String(alphabeta[i]) + '\'>' + String(alphabeta[i]) + '</dt>';
       that._brandData.forEach(function (brand) {
         if (brand.letter == alphabeta[i]) {
-          brandList += '<dd data-value="' + String(brand.id) + '" data-text="' + String(brand.name) + '" data-target="brand">' + String(brand.name) + '</dd>';
+          brandList += '<dd data-value="' + String(brand.id) + '" \n            data-text="' + String(brand.name) + '" \n            ' + (brand.pinyin ? 'data-pinyin=' + String(brand.pinyin) : '') + '\n            data-target="brand">' + String(brand.name) + '</dd>';
         }
       });
     }
@@ -315,14 +315,14 @@ Carpicker.prototype.setSeries = function (data, seriesItem) {
       // 全部车系项
       if (seriesItem && seriesItem.show && i == 0) {
         if (seriesItem.link) {
-          seriesStr += '<dd><a class="all" href="' + String(seriesItem.url) + String(series.brandId) + '" target="_blank">\u5168\u90E8\u8F66\u7CFB</a></dd>';
+          seriesStr += '<dd><a class="all" href="' + String(seriesItem.url) + '" target="_blank">\u5168\u90E8\u8F66\u7CFB</a></dd>';
         } else {
           seriesStr += '<dd data-value="' + String(series.brandId) + '" data-text="\u5168\u90E8\u8F66\u7CFB" data-target="series">\u5168\u90E8\u8F66\u7CFB</dd>';
         }
       }
       seriesStr += '<dt>' + String(series.name) + '</dt>';
       series.list.forEach(function (item) {
-        seriesStr += '<dd data-value="' + String(item.id) + '" data-text="' + String(item.name) + '" data-target="series">' + String(item.name) + '</dd>';
+        seriesStr += '<dd data-value="' + String(item.id) + '" \n          data-text="' + String(item.name) + '" \n          ' + (item.pinyin ? 'data-pinyin=' + String(item.pinyin) : '') + '\n          data-target="series">' + String(item.name) + '</dd>';
       });
     });
     seriesStr += '</dl>';
@@ -331,7 +331,7 @@ Carpicker.prototype.setSeries = function (data, seriesItem) {
   }
 };
 
-Carpicker.prototype.setSpec = function (data) {
+Carpicker.prototype.setSpec = function (data, selectSpec) {
   var that = this;
 
   if (that.options.selectNav) {
@@ -345,7 +345,7 @@ Carpicker.prototype.setSpec = function (data) {
     data.forEach(function (item) {
       specStr += '<dt>' + String(item.name) + '</dt>';
       item.list.forEach(function (spec) {
-        specStr += '<dd data-value="' + String(spec.id) + '" data-text="' + String(spec.name) + '" data-target="spec">' + String(spec.name) + '<span>' + (spec.price > 0 ? (spec.price / 10000.0).toFixed(2) + '\u4E07' : '\u6682\u65E0') + '</span></dd>';
+        specStr += '<dd data-value="' + String(spec.id) + '" \n          data-text="' + String(spec.name) + '"\n          data-target="spec"\n          ' + (selectSpec && $.isArray(selectSpec) && selectSpec.includes(spec.id.toString()) ? 'class="disabled"' : '') + '>\n            ' + String(spec.name) + '\n            ' + (spec.price ? '<span>' + (spec.price > 0 ? (spec.price / 10000.0).toFixed(2) + '\u4E07' : '\u6682\u65E0') + '</span>' : '') + '\n          </dd>';
       });
     });
     specStr += '<dd></dd>';
@@ -366,6 +366,17 @@ Carpicker.prototype.setIndexLoca = function () {
     var targetTop = $('dt#' + target, that.$brand).position("list").top;
     $('.list', that.$brand).scrollTop(targetTop);
   });
+};
+
+Carpicker.prototype.destroy = function () {
+  this.$elem.removeData(DATA_KEY);
+
+  this.$picker.off(Event.CLICK);
+  this.$dropdown.off(Event.CLICK, Selector.DATA_VALUE);
+
+  this.onInitPicker = null, this.onBrandPicker = null, this.onSeriesPicker = null, this.onSpecPicker = null;
+
+  this._brandData = null, this.setValue({});
 };
 
 /**
